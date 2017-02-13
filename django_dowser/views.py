@@ -1,5 +1,5 @@
 from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.utils.html import escape
 from types import ModuleType, FrameType
 from django.core.urlresolvers import reverse
@@ -36,8 +36,7 @@ def index(request):
                       )
                    )
             rows.append(row)
-    return render_to_response("django_dowser/graphs.html", {'output': "\n".join(rows)},
-                              context_instance=RequestContext(request))
+    return render(request, "django_dowser/graphs.html", {'output': "\n".join(rows)})
 
 
 def chart_url2(entries):
@@ -61,9 +60,8 @@ def trace(request, typename, objid=None):
     else:
         rows = trace_one(typename, objid)
 
-    return render_to_response("django_dowser/trace.html",
-                              {'output': "\n".join(rows), 'typename': typename, 'objid': objid or ""},
-                              context_instance=RequestContext(request))
+    return render(request, "django_dowser/trace.html",
+                              {'output': "\n".join(rows), 'typename': typename, 'objid': objid or ""})
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -92,9 +90,8 @@ def tree(request, objid, typename):
     if not rows:
         rows = ["<h3>The object you requested was not found.</h3>"]
 
-    return render_to_response("django_dowser/tree.html",
-                              {'output': "\n".join(rows), 'typename': typename, 'objid': objid},
-                              context_instance=RequestContext(request))
+    return render(request, "django_dowser/tree.html",
+                              {'output': "\n".join(rows), 'typename': typename, 'objid': objid})
 
 
 method_types = [type(tuple.__le__),                 # 'wrapper_descriptor'
@@ -243,3 +240,4 @@ class ReferrerTree(reftree.Tree):
             if getattr(obj, k, None) is referent:
                 return " (via its %r attribute)" % k
         return ""
+
